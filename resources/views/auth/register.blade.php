@@ -2,6 +2,22 @@
     <form method="POST" action="{{ route('register') }}">
         @csrf
 
+        <!-- Student ID -->
+<div>
+    <x-input-label for="student_id" :value="__('Student ID')" />
+
+    <x-text-input id="student_id"
+                  class="block mt-1 w-full"
+                  type="text"
+                  name="student_id"
+                  :value="old('student_id')"
+                  required
+                  autofocus
+                  autocomplete="student_id" />
+
+    <x-input-error :messages="$errors->get('student_id')" class="mt-2" />
+</div>
+
         <!-- Name -->
         <div>
             <x-input-label for="name" :value="__('Name')" />
@@ -15,6 +31,41 @@
             <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
+
+        <!-- Course -->
+<div class="mt-4">
+    <x-input-label for="course" :value="__('Course')" />
+
+    <x-text-input id="course"
+                  class="block mt-1 w-full"
+                  type="text"
+                  name="course"
+                  :value="old('course')"
+                  required
+                  autocomplete="course" />
+
+    <x-input-error :messages="$errors->get('course')" class="mt-2" />
+</div>
+
+        <!-- Semester -->
+<div class="mt-4">
+    <x-input-label for="semester" :value="__('Semester')" />
+
+    <select id="semester"
+            name="semester"
+            class="block mt-1 w-full border-gray-300 rounded-md shadow-sm"
+            required>
+
+        <option value="">Select Semester</option>
+        <option value="1">Semester 1</option>
+        <option value="2">Semester 2</option>
+        <option value="3">Semester 3</option>
+        <option value="4">Semester 4</option>
+
+    </select>
+
+    <x-input-error :messages="$errors->get('semester')" class="mt-2" />
+</div>
 
         <!-- Password -->
         <div class="mt-4">

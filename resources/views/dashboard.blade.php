@@ -1,29 +1,17 @@
 <x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('Dashboard') }}
+        </h2>
+    </x-slot>
 
-<div class="p-6">
-
-@if(auth()->user()->role == 'admin')
-
-    <h1 class="text-2xl font-bold">
-        Admin Dashboard
-    </h1>
-
-    <p>
-        Selamat datang Admin SPS
-    </p>
-
-@else
-
-    <h1 class="text-2xl font-bold">
-        Student Dashboard
-    </h1>
-
-    <p>
-        Selamat datang {{ auth()->user()->name }}
-    </p>
-
-@endif
-
-</div>
-
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900">
+                    {{ __("You're logged in!") }}
+                </div>
+            </div>
+        </div>
+    </div>
 </x-app-layout>

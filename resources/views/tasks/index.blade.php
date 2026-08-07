@@ -1,107 +1,109 @@
 <x-app-layout>
 
-<div class="p-6">
-     
-@if(session('success'))
-    <div class="bg-green-100 text-green-700 p-3 rounded mb-4">
-        {{ session('success') }}
-    </div>
-@endif
+<div class="max-w-7xl mx-auto py-6">
 
-    <h1 class="text-2xl font-bold mb-4">
-        My Tasks
-    </h1>
+    <h2>My Tasks</h2>
+
+    @if(session('success'))
+        <div>
+            {{ session('success') }}
+        </div>
+    @endif
 
 
-    <a href="{{ route('tasks.create') }}"
-       class="bg-blue-500 text-white px-4 py-2 rounded">
-        + Add Task
+    <a href="{{ route('tasks.create') }}">
+        Add New Task
     </a>
 
 
-    <div class="mt-6">
+    <table border="1" cellpadding="10">
+
+        <tr>
+            <th>Title</th>
+            <th>Due Date</th>
+            <th>Priority</th>
+            <th>Difficulty</th>
+            <th>Score</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+
 
         @foreach($tasks as $task)
 
-            <div class="border p-4 mb-3 rounded">
+        <tr>
 
-        <h3 class="font-bold">
-        {{ $task->title }}
-        </h3>
+            <td>
+                {{ $task->title }}
+            </td>
 
-        <p>
-        Due: {{ $task->due_date }}
-        </p>
+            <td>
+                {{ $task->due_date }}
+            </td>
 
-        <p>
-        Priority: {{ $task->priority }}
-        </p>
+            <td>
+                {{ $task->priority }}
+            </td>
 
-        <p>
-    Status:
+            <td>
+                {{ $task->difficulty }}
+            </td>
 
-    @if($task->status == 'Completed')
-        <span class="bg-green-100 text-green-700 px-2 py-1 rounded">
-            ✅ Completed
-        </span>
-    @else
-        <span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded">
-            ⏳ Pending
-        </span>
-    @endif
+            <td>
+            {{ $task->priority_score }}
+            </td>
 
-</p>
+            <td>
+                {{ $task->status }}
+            </td>
 
-        @if($task->status == 'Pending')
+            <td>
 
-<form action="{{ route('tasks.complete', $task->id) }}"
-      method="POST"
-      style="display:inline;">
+                <a href="{{ route('tasks.edit', $task->id) }}">
+                    Edit
+                </a>
 
-    @csrf
-    @method('PATCH')
 
-    <button type="submit"
-            class="bg-green-500 text-white px-3 py-1 rounded">
+                <form action="{{ route('tasks.destroy', $task->id) }}"
+                      method="POST"
+                      style="display:inline">
 
-        Complete
+                    @csrf
+                    @method('DELETE')
 
-    </button>
+                    <button type="submit">
+                        Delete
+                    </button>
 
-</form>
+                </form>
 
-@endif
 
-        <a href="{{ route('tasks.edit', $task->id) }}"
-        class="bg-yellow-500 text-white px-3 py-1 rounded">
+                @if($task->status == 'Pending')
 
-        Edit
+                <form action="{{ route('tasks.complete', $task->id) }}"
+                      method="POST"
+                      style="display:inline">
 
-        </a>
+                    @csrf
+                    @method('PATCH')
 
-        <form action="{{ route('tasks.destroy', $task->id) }}"
-      method="POST"
-      style="display:inline;">
+                    <button type="submit">
+                        Complete
+                    </button>
 
-    @csrf
-    @method('DELETE')
+                </form>
 
-    <button type="submit"
-            onclick="return confirm('Are you sure you want to delete this task?')"
-            class="bg-red-500 text-white px-3 py-1 rounded">
+                @endif
 
-        Delete
+            </td>
 
-    </button>
-
-</form>
-
-        </div>
+        </tr>
 
         @endforeach
 
 
-    </div>
+    </table>
+
 
 </div>
 

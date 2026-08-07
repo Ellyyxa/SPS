@@ -11,7 +11,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password', 'role'])]
+#[Fillable([
+    'student_id',
+    'name',
+    'email',
+    'course',
+    'semester',
+    'password',
+    'role'
+])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -35,4 +43,20 @@ class User extends Authenticatable
     {
         return $this->hasMany(Task::class);
     }
+
+    public function moods()
+{
+    return $this->hasMany(Mood::class);
+}
+
+public function sentNotifications()
+{
+    return $this->hasMany(Notification::class, 'admin_id');
+}
+
+public function notifications()
+{
+    return $this->hasMany(Notification::class, 'user_id');
+}
+
 }

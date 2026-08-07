@@ -4,17 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Task extends Model
+class Mood extends Model
 {
     protected $fillable = [
         'user_id',
-        'title',
-        'description',
-        'due_date',
-        'priority',
-        'status',
-        'difficulty',
-        'priority_score',
+        'mood',
+        'note',
+        'date',
     ];
 
 
