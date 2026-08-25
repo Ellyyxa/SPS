@@ -13,7 +13,7 @@ class Task extends Model
         'due_date',
         'priority',
         'status',
-        'difficulty',
+        'difficulty', 
         'priority_score',
     ];
 

@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\MoodController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ProductivityReportController;
 
 Route::middleware(['auth', 'verified'])->group(function () {
 
@@ -36,6 +37,16 @@ Route::middleware('auth')->group(function () {
     Route::resource('notifications', NotificationController::class);
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])
         ->name('admin.dashboard');
+
+});
+
+Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
+
+    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])
+        ->name('admin.dashboard');
+
+    Route::get('/admin/productivity', [ProductivityReportController::class, 'index'])
+        ->name('admin.productivity');
 
 });
 
