@@ -1,29 +1,4 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Profile') }}
-        </h2>
-    </x-slot>
-
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-profile-information-form')
-                </div>
-            </div>
-
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-password-form')
-                </div>
-            </div>
-
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.delete-user-form')
-                </div>
-            </div>
-        </div>
-    </div>
-</x-app-layout>
+@extends('layouts.student')
+@section('content')
+<div class="mb-8"><p class="text-sm font-bold uppercase tracking-[.18em] text-blue-700">Your account</p><h1 class="student-page-title mt-1">My Profile</h1></div><div class="grid gap-6 xl:grid-cols-[.75fr_1.25fr]"><aside class="student-card p-7"><div class="flex h-24 w-24 items-center justify-center rounded-3xl bg-purple-100 text-5xl">♙</div><h2 class="mt-5 text-xl font-extrabold">{{ $user->name }}</h2><p class="mt-1 text-sm text-slate-600">{{ $user->student_id ?: 'Student' }}</p><dl class="mt-6 space-y-3 text-sm"><div><dt class="font-bold text-slate-500">Course</dt><dd>{{ $user->course ?: 'Not provided' }}</dd></div><div><dt class="font-bold text-slate-500">Semester</dt><dd>{{ $user->semester ?: 'Not provided' }}</dd></div></dl></aside><div class="space-y-6"><div class="student-card p-6 sm:p-8">@include('profile.partials.update-profile-information-form')</div><div class="student-card p-6 sm:p-8">@include('profile.partials.update-password-form')</div><div class="student-card p-6 sm:p-8">@include('profile.partials.delete-user-form')</div></div></div>
+@endsection

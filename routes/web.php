@@ -7,6 +7,7 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\MoodController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProductivityReportController;
+use App\Http\Controllers\DashboardController;
 
 Route::middleware(['auth', 'verified'])->group(function () {
 
@@ -22,9 +23,14 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified', 'student.mood.checked'])
+    ->name('dashboard');
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::view('/calendar', 'student.calendar')->name('calendar');
+    Route::view('/my-penguin', 'student.penguin')->name('penguin');
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -32,12 +38,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-    Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('moods', MoodController::class);
     Route::resource('notifications', NotificationController::class);
-    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])
-        ->name('admin.dashboard');
-
 });
 
 Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {

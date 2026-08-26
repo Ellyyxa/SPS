@@ -1,0 +1,4 @@
+@extends('layouts.student')
+@section('content')
+<div class="mb-8"><p class="text-sm font-bold uppercase tracking-[.18em] text-blue-700">Stay informed</p><h1 class="student-page-title mt-1">Notifications</h1></div><div class="student-card overflow-hidden"><div class="student-card-header">Latest updates</div><div class="divide-y divide-slate-100">@forelse($notifications as $notification)<article class="p-6"><div class="flex flex-col gap-2 sm:flex-row sm:justify-between"><div><h2 class="font-extrabold text-slate-900">{{ $notification->title }}</h2><p class="mt-2 leading-6 text-slate-600">{{ $notification->message }}</p></div><time class="shrink-0 text-sm font-semibold text-slate-500">{{ $notification->created_at->format('d M Y') }}</time></div></article>@empty<div class="p-8 text-center text-slate-500">You have no notifications yet.</div>@endforelse</div></div>
+@endsection

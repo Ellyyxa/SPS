@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
     $middleware->alias([
         'role' => \App\Http\Middleware\RoleMiddleware::class,
+        'student.mood.checked' => \App\Http\Middleware\EnsureStudentMoodCheckIn::class,
     ]);
 
 })

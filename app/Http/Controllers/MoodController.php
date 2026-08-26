@@ -58,7 +58,7 @@ if ($todayMood) {
     ]);
 
 
-    return redirect()->route('moods.index')
+    return redirect()->route('dashboard')
         ->with('success', 'Mood saved successfully.');
 }
 
