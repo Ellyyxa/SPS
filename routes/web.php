@@ -8,8 +8,9 @@ use App\Http\Controllers\MoodController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProductivityReportController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\CalendarController;
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'student.mood.checked'])->group(function () {
 
     Route::resource('tasks', TaskController::class);
 
@@ -27,19 +28,24 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified', 'student.mood.checked'])
     ->name('dashboard');
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::view('/calendar', 'student.calendar')->name('calendar');
+Route::middleware(['auth', 'verified', 'student.mood.checked'])->group(function () {
+    Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar');
     Route::view('/my-penguin', 'student.penguin')->name('penguin');
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified', 'student.mood.checked'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::resource('moods', MoodController::class);
+    Route::get('/moods/create', [MoodController::class, 'create'])->name('moods.create');
+    Route::post('/moods', [MoodController::class, 'store'])->name('moods.store');
+});
+
+Route::middleware(['auth', 'verified', 'student.mood.checked'])->group(function () {
+    Route::resource('moods', MoodController::class)->except(['create', 'store']);
     Route::resource('notifications', NotificationController::class);
 });
 

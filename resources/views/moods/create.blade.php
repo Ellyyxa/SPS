@@ -1,4 +1,4 @@
-@extends('layouts.student')
+@extends('layouts.mood-checkin')
 
 @section('content')
     <div class="mx-auto max-w-4xl">

@@ -36,7 +36,17 @@
                 </nav>
 
                 <div class="mt-auto border-t border-purple-800 px-4 py-5">
-                    <p class="mb-3 truncate px-4 text-sm font-medium text-purple-200">{{ auth()->user()->name ?? 'Student' }}</p>
+                    @php($sidebarUser = auth()->user())
+                    <div class="mb-3 flex items-center gap-3 px-3">
+                        <span class="profile-avatar h-10 w-10 rounded-xl border-purple-300 bg-purple-100 text-sm text-purple-800">
+                            @if ($sidebarUser?->profile_photo_path)
+                                <img src="{{ asset('storage/' . $sidebarUser->profile_photo_path) }}" alt="{{ $sidebarUser->name }}'s profile photo">
+                            @else
+                                {{ strtoupper(mb_substr($sidebarUser?->name ?? 'S', 0, 1)) }}
+                            @endif
+                        </span>
+                        <p class="min-w-0 truncate text-sm font-medium text-purple-100">{{ $sidebarUser?->name ?? 'Student' }}</p>
+                    </div>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit" class="student-nav-link w-full"><x-student-icon name="logout" />Logout</button>

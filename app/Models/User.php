@@ -17,6 +17,7 @@ use Illuminate\Notifications\Notifiable;
     'email',
     'course',
     'semester',
+    'profile_photo_path',
     'password',
     'role'
 ])]
