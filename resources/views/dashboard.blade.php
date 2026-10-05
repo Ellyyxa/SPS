@@ -4,22 +4,57 @@
     @php
         $moodFaces = ['Happy' => '😊', 'Neutral' => '😐', 'Sad' => '😢', 'Stress' => '😰', 'Angry' => '😠'];
         $moodFace = $moodFaces[$todayMood?->mood] ?? '🙂';
+        $firstName = \Illuminate\Support\Str::before(trim(auth()->user()->name), ' ') ?: auth()->user()->name;
+        $greeting = now()->hour < 12 ? 'Good morning' : (now()->hour < 18 ? 'Good afternoon' : 'Good evening');
+        $pendingSummary = $pendingTasks > 0
+            ? 'You have '.$pendingTasks.' '.\Illuminate\Support\Str::plural('task', $pendingTasks).' waiting. Let’s make today productive.'
+            : 'You’re all caught up. Great work!';
     @endphp
 
-    <div class="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <div class="mb-6">
         <div>
             <p class="text-sm font-bold uppercase tracking-[.18em] text-blue-700">Student Productivity System</p>
-            <h1 class="student-page-title mt-1">Welcome back, {{ auth()->user()->name }}!</h1>
-            <p class="mt-2 text-slate-600">Here is your productivity snapshot for today.</p>
+            <h1 class="student-page-title mt-1">Dashboard</h1>
+            <p class="mt-2 text-slate-600">Here’s what’s happening with your productivity today.</p>
         </div>
-        <a href="{{ route('tasks.create') }}" class="student-button">+ Add Task</a>
     </div>
 
-    <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <div class="student-card p-5"><p class="text-sm font-bold text-slate-500">Total tasks</p><p class="mt-2 text-4xl font-extrabold text-indigo-950">{{ $totalTasks }}</p></div>
-        <div class="student-card p-5"><p class="text-sm font-bold text-slate-500">Completed</p><p class="mt-2 text-4xl font-extrabold text-emerald-600">{{ $completedTasks }}</p></div>
-        <div class="student-card p-5"><p class="text-sm font-bold text-slate-500">Pending</p><p class="mt-2 text-4xl font-extrabold text-amber-500">{{ $pendingTasks }}</p></div>
-        <div class="student-card p-5"><p class="text-sm font-bold text-slate-500">Due today</p><p class="mt-2 text-4xl font-extrabold text-rose-500">{{ $todayTasks->count() }}</p></div>
+    <section class="dashboard-hero">
+        <div class="dashboard-hero-copy">
+            <p class="dashboard-hero-date">{{ strtoupper(now()->format('l, j F Y')) }}</p>
+            <h2>{{ $greeting }}, {{ $firstName }}</h2>
+            <p class="dashboard-hero-summary">{{ $pendingSummary }}</p>
+            <a href="{{ route('tasks.index') }}" class="dashboard-hero-button">
+                View Tasks <span aria-hidden="true">→</span>
+            </a>
+        </div>
+
+        <div class="dashboard-hero-penguin-wrap">
+            <img
+                src="{{ $penguinImage }}"
+                alt="Level {{ $gamificationLevel['number'] }} {{ $gamificationLevel['name'] }} penguin"
+                class="dashboard-hero-penguin"
+            >
+        </div>
+    </section>
+
+    <section class="dashboard-summary-grid mt-5">
+        <article class="dashboard-summary-card">
+            <span class="dashboard-summary-icon is-pending" aria-hidden="true">◷</span>
+            <div><p>Pending Tasks</p><strong>{{ $pendingTasks }}</strong><small>{{ $pendingTasks === 1 ? 'Task waiting for you' : 'Tasks waiting for you' }}</small></div>
+        </article>
+        <article class="dashboard-summary-card">
+            <span class="dashboard-summary-icon is-completed" aria-hidden="true">✓</span>
+            <div><p>Completed Tasks</p><strong>{{ $completedTasks }}</strong><small>Tasks completed so far</small></div>
+        </article>
+        <article class="dashboard-summary-card">
+            <span class="dashboard-summary-icon is-upcoming" aria-hidden="true">⌁</span>
+            <div><p>Upcoming Deadlines</p><strong>{{ $upcomingTasks->count() }}</strong><small>{{ $upcomingTasks->isEmpty() ? 'No upcoming deadlines' : 'Next scheduled tasks' }}</small></div>
+        </article>
+        <article class="dashboard-summary-card">
+            <span class="dashboard-summary-icon is-mood" aria-hidden="true">{{ $moodFace }}</span>
+            <div><p>Today’s Mood</p><strong>{{ $todayMood?->mood ?? 'Not recorded' }}</strong><small>{{ $todayMood ? 'Checked in today' : 'Daily check-in pending' }}</small></div>
+        </article>
     </section>
 
     <section class="mt-6 grid gap-6 xl:grid-cols-2">
