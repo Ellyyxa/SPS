@@ -27,10 +27,72 @@
             <div class="student-card-header flex items-center justify-between"><span>Today’s Mood</span><span class="text-2xl">{{ $moodFace }}</span></div>
             <div class="flex items-center gap-4 p-6"><span class="text-6xl">{{ $moodFace }}</span><div><p class="text-xl font-extrabold text-slate-900">{{ $todayMood?->mood ?? 'No mood recorded' }}</p><p class="mt-1 text-sm text-slate-600">{{ $todayMood?->note ?: 'Thanks for checking in with yourself today.' }}</p><a href="{{ route('moods.index') }}" class="mt-4 inline-block text-sm font-extrabold text-purple-700 hover:text-purple-900">See emotion history →</a></div></div>
         </article>
-        <article class="student-card overflow-hidden">
-            <div class="student-card-header">FocusBuddy</div>
-            <div class="flex items-center gap-5 p-6"><div class="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-3xl bg-blue-100"><img src="{{ asset('images/sps/focusbuddy.png') }}" alt="FocusBuddy penguin" class="h-full w-full object-contain"></div><div><p class="text-xl font-extrabold text-slate-900">Keep your focus going!</p><p class="mt-1 text-sm leading-6 text-slate-600">Complete a task, take a short break, then return ready for the next one.</p><a href="{{ route('penguin') }}" class="mt-4 inline-block text-sm font-extrabold text-purple-700 hover:text-purple-900">Meet your companion →</a></div></div>
-        </article>
+       <article class="student-card overflow-hidden">
+    <div class="student-card-header flex items-center justify-between">
+        <span>FocusBuddy</span>
+
+        <span class="rounded-full bg-white px-3 py-1 text-xs font-extrabold text-purple-800">
+            Level {{ $gamificationLevel['number'] }}
+        </span>
+    </div>
+
+    <div class="grid gap-5 p-6 sm:grid-cols-[150px_1fr] sm:items-center">
+
+        <div class="focusbuddy-stage">
+            <img
+                src="{{ $penguinImage }}"
+                alt="Level {{ $gamificationLevel['number'] }} {{ $gamificationLevel['name'] }} penguin"
+                class="focusbuddy-penguin"
+            >
+        </div>
+
+        <div class="min-w-0">
+            <p class="text-xl font-extrabold text-slate-900">
+                {{ $gamificationLevel['name'] }}
+            </p>
+
+            <p class="mt-1 text-sm leading-6 text-slate-600">
+                {{ number_format($gamificationProfile->total_xp) }} XP
+                · 🔥 {{ $gamificationProfile->current_streak }}
+                {{ $gamificationProfile->current_streak == 1 ? 'day' : 'days' }} streak
+            </p>
+
+            <div class="mt-4">
+                <div class="mb-2 flex items-center justify-between gap-3 text-xs font-bold text-slate-500">
+                    @if ($gamificationNextLevel)
+                        <span>
+                            Progress to Level {{ $gamificationNextLevel['number'] }}
+                        </span>
+
+                        <span>{{ $gamificationPercent }}%</span>
+                    @else
+                        <span class="font-extrabold text-purple-700">
+                            Productivity Master
+                        </span>
+
+                        <span class="font-extrabold text-purple-700">
+                            MAX LEVEL
+                        </span>
+                    @endif
+                </div>
+
+                <div class="h-2.5 overflow-hidden rounded-full bg-purple-100">
+                    <div
+                        data-xp-fill="{{ min(100, max(0, $gamificationPercent)) }}%"
+                        class="xp-fill h-full w-0 rounded-full bg-purple-700"
+                    ></div>
+                </div>
+            </div>
+
+            <a
+                href="{{ route('penguin') }}"
+                class="mt-4 inline-block text-sm font-extrabold text-purple-700 hover:text-purple-900"
+            >
+                View My Penguin →
+            </a>
+        </div>
+    </div>
+</article>
     </section>
 
     <section class="mt-6 grid gap-6 xl:grid-cols-[1.45fr_.85fr]">

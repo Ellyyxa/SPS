@@ -1,31 +1,4 @@
-<h1>Productivity Report</h1>
-
-<hr>
-
-@foreach ($students as $student)
-
-    <h3>{{ $student->name }}</h3>
-
-    <p>
-        Total Tasks:
-        {{ $student->tasks_count }}
-    </p>
-
-    <p>
-        Completed Tasks:
-        {{ $student->completed_tasks }}
-    </p>
-
-    <p>
-        Pending Tasks:
-        {{ $student->pending_tasks }}
-    </p>
-
-    <p>
-        Average Priority Score:
-        {{ number_format($student->tasks_avg_priority_score ?? 0, 2) }}
-    </p>
-
-    <hr>
-
-@endforeach
+@extends('layouts.admin')
+@section('content')
+<div class="mb-8"><p class="text-sm font-bold uppercase tracking-[.18em] text-blue-700">Student performance</p><h1 class="student-page-title mt-1">Productivity Report</h1></div><div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"><div class="admin-stat"><p>Students</p><p>{{ $summary['students'] }}</p></div><div class="admin-stat"><p>Total Tasks</p><p>{{ $summary['tasks'] }}</p></div><div class="admin-stat"><p>Completed</p><p>{{ $summary['completed'] }}</p></div><div class="admin-stat"><p>Pending</p><p>{{ $summary['pending'] }}</p></div></div><section class="admin-card mt-6 overflow-hidden"><form method="GET" class="flex gap-3 p-5" data-admin-filter><input class="admin-input max-w-md" name="search" value="{{ request('search') }}" data-filter-search placeholder="Search student name or ID"><button class="admin-button">Search</button></form><div class="overflow-x-auto"><table class="admin-table"><thead><tr><th>Student</th><th>Total</th><th>Completed</th><th>Pending</th><th>Rate</th><th>Avg Priority</th></tr></thead><tbody>@forelse($students as $student)@php($rate=$student->tasks_count?round($student->completed_tasks/$student->tasks_count*100):0)<tr><td><a class="font-extrabold text-purple-800" href="{{ route('admin.students.show',$student) }}">{{ $student->name }}</a><small class="block">{{ $student->student_id }}</small></td><td>{{ $student->tasks_count }}</td><td>{{ $student->completed_tasks }}</td><td>{{ $student->pending_tasks }}</td><td>{{ $rate }}%</td><td>{{ number_format($student->tasks_avg_priority_score??0,2) }}</td></tr>@empty<tr><td colspan="6" class="text-center">No students found.</td></tr>@endforelse</tbody></table></div><div class="p-5">{{ $students->links() }}</div></section>
+@endsection

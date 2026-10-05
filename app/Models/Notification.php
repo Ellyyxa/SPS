@@ -9,6 +9,10 @@ class Notification extends Model
     protected $fillable = [
         'admin_id',
         'user_id',
+        'task_id',
+        'broadcast_id',
+        'notification_type',
+        'deduplication_key',
         'title',
         'message',
         'is_read',
@@ -22,5 +26,10 @@ class Notification extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function task()
+    {
+        return $this->belongsTo(Task::class);
     }
 }

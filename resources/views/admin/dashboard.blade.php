@@ -1,15 +1,7 @@
-<h1>Admin Dashboard</h1>
-
-<hr>
-
-<p>Total Students : {{ $totalStudents }}</p>
-
-<p>Total Tasks : {{ $totalTasks }}</p>
-
-<p>Completed Tasks : {{ $completedTasks }}</p>
-
-<p>Pending Tasks : {{ $pendingTasks }}</p>
-
-<p>Total Notifications : {{ $totalNotifications }}</p>
-
-<p>Today's Mood Entries : {{ $todayMoods }}</p>
+@extends('layouts.admin')
+@section('content')
+<div class="mb-8"><p class="text-sm font-bold uppercase tracking-[.18em] text-blue-700">Administration</p><h1 class="student-page-title mt-1">Admin Dashboard</h1><p class="mt-2 text-slate-600">A live overview of SPS student activity.</p></div>
+<div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3"><div class="admin-stat"><p>Total Students</p><p>{{ $totalStudents }}</p></div><div class="admin-stat"><p>Total Tasks</p><p>{{ $totalTasks }}</p></div><div class="admin-stat"><p>Completed Tasks</p><p>{{ $completedTasks }}</p></div><div class="admin-stat"><p>Pending Tasks</p><p>{{ $pendingTasks }}</p></div><div class="admin-stat"><p>Notifications Sent</p><p>{{ $totalNotifications }}</p></div><div class="admin-stat"><p>Today’s Mood Entries</p><p>{{ $todayMoods }}</p></div></div>
+<div class="mt-6 grid gap-6 xl:grid-cols-2"><section class="admin-card p-5"><h2 class="text-lg font-extrabold">Today’s emotion distribution</h2><canvas class="admin-chart mt-3" data-admin-chart="#admin-today-emotions"></canvas></section><section class="admin-card p-5"><h2 class="text-lg font-extrabold">Task completion overview</h2>@php($total=max(1,$taskCompletion['completed']+$taskCompletion['pending']))<div class="mt-6 space-y-4">@foreach(['completed'=>'Completed','pending'=>'Pending'] as $key=>$label)<div><div class="flex justify-between text-sm font-bold"><span>{{ $label }}</span><span>{{ $taskCompletion[$key] }}</span></div><div class="mt-2 h-3 overflow-hidden rounded-full bg-slate-100"><div class="h-full {{ $key==='completed'?'bg-emerald-500':'bg-amber-500' }}" style="width:{{ ($taskCompletion[$key]/$total)*100 }}%"></div></div></div>@endforeach</div></section></div>
+<div class="mt-6 grid gap-6 xl:grid-cols-2"><section class="admin-card overflow-hidden"><div class="border-b border-slate-100 px-5 py-4 font-extrabold">Recent student moods</div><div class="divide-y divide-slate-100">@forelse($recentMoods as $mood)<a href="{{ route('admin.emotions.show',$mood->user) }}" class="flex items-center justify-between p-4 hover:bg-slate-50"><span><strong class="block">{{ $mood->user->name }}</strong><small class="text-slate-500">{{ $mood->date->format('d M Y') }}</small></span><span class="admin-badge admin-badge-mood">{{ $mood->mood }}</span></a>@empty<p class="p-5 text-slate-500">No mood activity yet.</p>@endforelse</div></section><section class="admin-card overflow-hidden"><div class="border-b border-slate-100 px-5 py-4 font-extrabold">Recent notifications</div><div class="divide-y divide-slate-100">@forelse($recentNotifications as $notification)<div class="p-4"><strong>{{ $notification->title }}</strong><p class="mt-1 text-sm text-slate-600">{{ $notification->message }}</p><small class="mt-2 block text-slate-500">To {{ $notification->user->name }} · {{ $notification->created_at->format('d M') }}</small></div>@empty<p class="p-5 text-slate-500">No notifications sent yet.</p>@endforelse</div></section></div><script id="admin-today-emotions" type="application/json">@json($todayMoodDistribution)</script>
+@endsection

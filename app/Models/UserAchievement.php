@@ -4,20 +4,20 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Mood extends Model
+class UserAchievement extends Model
 {
-    protected function casts(): array
-    {
-        return ['date' => 'date'];
-    }
-
     protected $fillable = [
         'user_id',
-        'mood',
-        'note',
-        'date',
+        'achievement_key',
+        'unlocked_at',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'unlocked_at' => 'datetime',
+        ];
+    }
 
     public function user()
     {

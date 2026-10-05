@@ -1,0 +1,4 @@
+@extends('layouts.admin')
+@section('content')
+<a href="{{ route('admin.emotions.index') }}" class="text-sm font-bold text-purple-800">← Emotion Analysis</a><h1 class="student-page-title mt-3">{{ $user->name }}’s emotions</h1><section class="admin-card mt-6 p-5"><h2 class="font-extrabold">Mood trend</h2><canvas class="admin-chart" data-admin-trend="#student-trend"></canvas></section><section class="admin-card mt-6 overflow-hidden"><div class="border-b p-4 font-extrabold">Mood history</div>@forelse($moods as $mood)<div class="flex justify-between border-b p-4"><span><strong>{{ $mood->mood }}</strong><small class="block">{{ $mood->note?:'No note' }}</small></span><small>{{ $mood->date->format('d M Y') }}</small></div>@empty<p class="p-5">No mood entries yet.</p>@endforelse</section><script id="student-trend" type="application/json">@json($trend)</script>
+@endsection

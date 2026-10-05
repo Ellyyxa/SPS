@@ -10,11 +10,17 @@ class NotificationController extends Controller
 {
     public function index()
     {
-        // Student hanya nampak notification sendiri
-        $notifications = auth()->user()
+        $student = auth()->user();
+        $notifications = $student
             ->notifications()
             ->latest()
             ->get();
+
+        // Mark only this student's delivered rows as read. Broadcasts are also
+        // per-student rows, so another student's read state is never touched.
+        $student->notifications()
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
 
         return view('notifications.index', compact('notifications'));
     }
