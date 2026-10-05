@@ -106,6 +106,36 @@
                 @enderror
             </div>
 
+                        {{-- Programme --}}
+            <div>
+                <label for="programme" class="mb-2 block text-sm font-bold text-slate-700">
+                    Programme
+                </label>
+
+                <select
+                    id="programme"
+                    name="programme"
+                    class="admin-input w-full"
+                    required
+                >
+                    <option value="">Select programme</option>
+
+                    <option value="SVM" @selected(old('programme') === 'SVM')>
+                        SVM
+                    </option>
+
+                    <option value="DVM" @selected(old('programme') === 'DVM')>
+                        DVM
+                    </option>
+                </select>
+
+                @error('programme')
+                    <p class="mt-2 text-sm font-semibold text-red-600">
+                        {{ $message }}
+                    </p>
+                @enderror
+            </div>
+
             {{-- Course --}}
             <div>
                 <label for="course" class="mb-2 block text-sm font-bold text-slate-700">
@@ -118,7 +148,7 @@
                     name="course"
                     value="{{ old('course') }}"
                     class="admin-input w-full"
-                    placeholder="Example: KSK"
+                    placeholder="Example: HSK"
                     required
                 >
 
@@ -143,7 +173,7 @@
                 >
                     <option value="">Select semester</option>
 
-                    @for ($semester = 1; $semester <= 8; $semester++)
+                    @for ($semester = 1; $semester <= 4; $semester++)
                         <option
                             value="{{ $semester }}"
                             @selected(old('semester') == $semester)

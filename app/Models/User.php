@@ -13,6 +13,7 @@ use Illuminate\Notifications\Notifiable;
     'student_id',
     'name',
     'email',
+    'programme',
     'course',
     'semester',
     'profile_photo_path',

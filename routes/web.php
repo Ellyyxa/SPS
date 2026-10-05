@@ -78,6 +78,12 @@ Route::get('/admin/students/{user}', [AdminStudentController::class, 'show'])
     Route::get('/admin/emotions', [AdminEmotionController::class, 'index'])->name('admin.emotions.index');
     Route::get('/admin/emotions/{user}', [AdminEmotionController::class, 'show'])->name('admin.emotions.show');
 
+    Route::get('/admin/students/{user}/edit', [AdminStudentController::class, 'edit'])
+    ->name('admin.students.edit');
+
+Route::patch('/admin/students/{user}', [AdminStudentController::class, 'update'])
+    ->name('admin.students.update');
+
     Route::get('/admin/notifications', [AdminNotificationController::class, 'index'])->name('admin.notifications.index');
     Route::get('/admin/notifications/create', [AdminNotificationController::class, 'create'])->name('admin.notifications.create');
     Route::post('/admin/notifications', [AdminNotificationController::class, 'store'])->name('admin.notifications.store');
