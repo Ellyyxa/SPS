@@ -107,6 +107,7 @@
     .auth-page { min-height: 100vh; background: #dceeff url('/images/sps/forest-background.png') center / cover fixed no-repeat; color: #1e293b; }
     .auth-stage { display: flex; min-height: 100vh; flex-direction: column; align-items: center; justify-content: center; padding: 2rem 1rem; }
     .auth-brand { display: flex; align-items: center; gap: .7rem; margin-bottom: 1.25rem; color: #2d1b55; }
+    .auth-brand-logo { display: block; width: min(12rem, 58vw); height: auto; filter: drop-shadow(0 8px 14px rgba(45, 27, 85, .14)); }
     .auth-brand-mark { display: grid; width: 3.7rem; height: 3.7rem; place-items: center; border: 2px solid #55348a; border-radius: 1.2rem; background: linear-gradient(145deg,#8f69ca,#3a216b); color: white; font-size: 2rem; font-weight: 800; box-shadow: 0 10px 25px rgba(52,32,106,.2); }
     .auth-brand strong { display: block; font-size: 2rem; line-height: 1; letter-spacing: -.06em; }.auth-brand small { display:block; margin-top:.25rem; font-size:.62rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; }
     .auth-panel { width: min(100%, 34rem); border: 1px solid rgba(100,116,139,.35); border-radius: 1.35rem; background: rgba(255,255,255,.97); padding: 1.75rem; box-shadow: 0 20px 50px rgba(38,70,136,.2); animation: student-card-in .4s ease both; }.auth-panel:has(.auth-grid) { width:min(100%, 46rem); }
