@@ -1,6 +1,122 @@
 @extends('layouts.student')
+
 @section('content')
-<div class="mb-8"><p class="text-sm font-bold uppercase tracking-[.18em] text-blue-700">Plan ahead</p><h1 class="student-page-title mt-1">My Calendar</h1><p class="mt-2 text-slate-600">Your existing task due dates are shown below.</p></div>
-<div class="grid gap-6 xl:grid-cols-[1.45fr_.75fr]" data-calendar><section class="student-card overflow-hidden"><div class="student-card-header flex items-center justify-between"><button type="button" data-calendar-prev class="rounded-lg px-2 py-1 hover:bg-white/70" aria-label="Previous month">←</button><h2 data-calendar-title>Calendar</h2><button type="button" data-calendar-next class="rounded-lg px-2 py-1 hover:bg-white/70" aria-label="Next month">→</button></div><div class="p-4 sm:p-6"><div class="calendar-weekdays">@foreach(['Sun','Mon','Tue','Wed','Thu','Fri','Sat'] as $day)<span>{{ $day }}</span>@endforeach</div><div class="calendar-grid" data-calendar-grid></div></div></section><aside class="student-card overflow-hidden"><div class="student-card-header">Selected date</div><div class="p-5" data-calendar-details><p class="text-sm text-slate-500">Select a date with a task to view its details.</p></div><div class="border-t border-slate-100 p-5 text-xs font-bold text-slate-500"><span class="mr-3 inline-flex items-center gap-1"><i class="inline-block h-2.5 w-2.5 rounded-full bg-amber-400"></i> Pending</span><span class="inline-flex items-center gap-1"><i class="inline-block h-2.5 w-2.5 rounded-full bg-emerald-500"></i> Completed</span></div></aside></div>
-<script id="calendar-tasks" type="application/json">@json($tasks)</script>
+
+<div class="mb-8">
+    <p class="text-sm font-bold uppercase tracking-[.18em] text-blue-700">
+        Plan ahead
+    </p>
+
+    <h1 class="student-page-title mt-1">
+        My Calendar
+    </h1>
+
+    <p class="mt-2 text-slate-600">
+        Your existing task due dates are shown below.
+    </p>
+</div>
+
+
+<div class="grid gap-6 xl:grid-cols-[1.45fr_.75fr]" data-calendar>
+
+    {{-- Calendar --}}
+    <section class="student-card overflow-hidden">
+
+        <div class="student-card-header flex items-center justify-between gap-3">
+
+            <button
+                type="button"
+                data-calendar-prev
+                class="rounded-lg px-3 py-2 hover:bg-white/70"
+                aria-label="Previous month"
+            >
+                ←
+            </button>
+
+
+            <div class="flex items-center gap-3">
+
+                <h2 data-calendar-title>
+                    Calendar
+                </h2>
+
+                <button
+                    type="button"
+                    data-calendar-today
+                    class="rounded-lg bg-white/60 px-3 py-1 text-xs font-bold
+                           text-purple-800 hover:bg-white"
+                >
+                    Today
+                </button>
+
+            </div>
+
+
+            <button
+                type="button"
+                data-calendar-next
+                class="rounded-lg px-3 py-2 hover:bg-white/70"
+                aria-label="Next month"
+            >
+                →
+            </button>
+
+        </div>
+
+
+        <div class="p-4 sm:p-6">
+
+            <div class="calendar-weekdays">
+                @foreach(['Sun','Mon','Tue','Wed','Thu','Fri','Sat'] as $day)
+                    <span>{{ $day }}</span>
+                @endforeach
+            </div>
+
+            <div
+                class="calendar-grid"
+                data-calendar-grid
+            ></div>
+
+        </div>
+
+    </section>
+
+
+    {{-- Selected Date --}}
+    <aside class="student-card overflow-hidden">
+
+        <div class="student-card-header">
+            Selected date
+        </div>
+
+        <div class="p-5" data-calendar-details>
+            <p class="text-sm text-slate-500">
+                Select a date to view its task details.
+            </p>
+        </div>
+
+
+        <div class="border-t border-slate-100 p-5 text-xs font-bold text-slate-500">
+
+            <span class="mr-3 inline-flex items-center gap-1">
+                <i class="inline-block h-2.5 w-2.5 rounded-full bg-amber-400"></i>
+                Pending
+            </span>
+
+            <span class="inline-flex items-center gap-1">
+                <i class="inline-block h-2.5 w-2.5 rounded-full bg-emerald-500"></i>
+                Completed
+            </span>
+
+        </div>
+
+    </aside>
+
+</div>
+
+
+<script id="calendar-tasks" type="application/json">
+    @json($tasks)
+</script>
+
 @endsection

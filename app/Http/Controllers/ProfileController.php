@@ -26,32 +26,34 @@ class ProfileController extends Controller
      * Update the user's profile information.
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
-    {
-        $user = $request->user();
-        $profileData = $request->validated();
-        $previousPhotoPath = null;
+{
 
-        if ($request->hasFile('profile_photo')) {
-            $newPhotoPath = $request->file('profile_photo')->store('profile-photos', 'public');
-            $previousPhotoPath = $user->profile_photo_path;
-            $profileData['profile_photo_path'] = $newPhotoPath;
-        }
+    $user = $request->user();
 
-        unset($profileData['profile_photo']);
-        $user->fill($profileData);
+    if ($request->hasFile('profile_photo')) {
 
-        if ($user->isDirty('email')) {
-            $user->email_verified_at = null;
-        }
+        $previousPhotoPath = $user->profile_photo_path;
 
+        $newPhotoPath = $request
+            ->file('profile_photo')
+            ->store('profile-photos', 'public');
+
+        $user->profile_photo_path = $newPhotoPath;
         $user->save();
 
-        if ($previousPhotoPath && str_starts_with($previousPhotoPath, 'profile-photos/') && $previousPhotoPath !== $user->profile_photo_path && Storage::disk('public')->exists($previousPhotoPath)) {
+        if (
+            $previousPhotoPath &&
+            str_starts_with($previousPhotoPath, 'profile-photos/') &&
+            $previousPhotoPath !== $newPhotoPath &&
+            Storage::disk('public')->exists($previousPhotoPath)
+        ) {
             Storage::disk('public')->delete($previousPhotoPath);
         }
-
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
+
+    return Redirect::route('profile.edit')
+        ->with('status', 'profile-updated');
+}
 
     /**
      * Delete the user's account.

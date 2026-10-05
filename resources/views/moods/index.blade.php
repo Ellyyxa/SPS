@@ -3,5 +3,12 @@
 @php($faces=['Happy'=>'😊','Neutral'=>'😐','Sad'=>'😢','Stress'=>'😰','Angry'=>'😠'])
 <div class="mb-8"><p class="text-sm font-bold uppercase tracking-[.18em] text-blue-700">Your wellbeing</p><h1 class="student-page-title mt-1">My Emotion History</h1></div>
 <div class="grid gap-6 xl:grid-cols-[1.2fr_.8fr]"><section class="student-card p-5 sm:p-6"><h2 class="mb-4 text-lg font-extrabold text-slate-900">Mood trend</h2><div class="h-72"><canvas class="mood-chart" data-mood-chart aria-label="Mood history chart"></canvas></div><p class="mt-3 text-xs text-slate-500">Happy, Neutral, Sad, Stress, and Angry are mapped from your existing daily check-ins.</p></section><section class="student-card overflow-hidden"><div class="student-card-header">Recent emotions</div><div class="divide-y divide-slate-100 max-h-80 overflow-auto">@forelse($moods as $mood)<div class="flex items-center justify-between gap-3 p-4"><div><p class="font-extrabold text-slate-900">{{ $faces[$mood->mood] ?? '🙂' }} {{ $mood->mood }}</p><p class="mt-1 text-sm text-slate-600">{{ $mood->note ?: 'No note added.' }}</p></div><span class="shrink-0 text-xs font-bold text-slate-500">{{ \Carbon\Carbon::parse($mood->date)->format('d M') }}</span></div>@empty<div class="p-6 text-sm text-slate-500">No emotion history yet.</div>@endforelse</div></section></div>
-<script id="mood-history" type="application/json">@json($moods->map(fn($mood) => ['date' => $mood->date, 'mood' => $mood->mood])->values())</script>
+<script id="mood-history" type="application/json">
+@json(
+    $moods->map(fn($mood) => [
+        'date' => \Carbon\Carbon::parse($mood->date)->format('Y-m-d'),
+        'mood' => $mood->mood,
+    ])->values()
+)
+</script>
 @endsection
