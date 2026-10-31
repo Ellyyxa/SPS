@@ -42,7 +42,7 @@
                     <dl class="task-metadata">
                         <div><dt>Due date</dt><dd><time datetime="{{ \Carbon\Carbon::parse($task->due_date)->toDateString() }}">{{ \Carbon\Carbon::parse($task->due_date)->format('d M Y') }}</time></dd></div>
                         <div><dt>Priority</dt><dd><span class="task-badge priority-{{ strtolower($task->priority ?? 'low') }}">{{ $task->priority ?? 'Not set' }}</span></dd></div>
-                        <div><dt>Difficulty</dt><dd>{{ [1 => 'Easy', 2 => 'Medium', 3 => 'Hard'][$task->difficulty] ?? $task->difficulty }}</dd></div>
+                        <div><dt>Difficulty</dt><dd><span class="task-badge task-difficulty">{{ [1 => 'Easy', 2 => 'Medium', 3 => 'Hard'][$task->difficulty] ?? $task->difficulty }}</span></dd></div>
                         <div><dt>Smart Priority Score</dt><dd>{{ $task->priority_score }}</dd></div>
                     </dl>
                     <div class="task-card-actions">
