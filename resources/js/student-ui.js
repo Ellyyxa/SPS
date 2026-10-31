@@ -21,20 +21,44 @@ ready(() => {
         });
     });
 
-    const filter = document.querySelector('[data-task-filter]');
-    const statusFilter = document.querySelector('[data-task-status]');
-    const priorityFilter = document.querySelector('[data-task-priority]');
-    const sorter = document.querySelector('[data-task-sort]');
-    const list = document.querySelector('[data-task-list]');
-    const rows = () => [...document.querySelectorAll('[data-task-row]')];
-    const applyFilter = () => rows().forEach((row) => { const matchesSearch=row.dataset.taskSearch.includes(filter?.value.toLowerCase() || ''), matchesStatus=!statusFilter?.value||row.dataset.taskStatusValue===statusFilter.value, matchesPriority=!priorityFilter?.value||row.dataset.taskPriorityValue===priorityFilter.value; row.classList.toggle('is-hidden', !(matchesSearch&&matchesStatus&&matchesPriority)); });
-    filter?.addEventListener('input', applyFilter);
-    statusFilter?.addEventListener('change', applyFilter);
-    priorityFilter?.addEventListener('change', applyFilter);
-    sorter?.addEventListener('change', () => {
-        const sorted = rows().sort((a, b) => sorter.value === 'priority' ? Number(b.dataset.taskScore) - Number(a.dataset.taskScore) : Number(a.dataset.taskDue) - Number(b.dataset.taskDue));
-        sorted.forEach((row) => list.appendChild(row));
-    });
+    const taskWorkspace = document.querySelector('[data-task-workspace]');
+    if (taskWorkspace) {
+        const search = taskWorkspace.querySelector('[data-task-filter]');
+        const statuses = [...taskWorkspace.querySelectorAll('[data-task-status]')];
+        const priority = taskWorkspace.querySelector('[data-task-priority]');
+        const sorter = taskWorkspace.querySelector('[data-task-sort]');
+        const list = taskWorkspace.querySelector('[data-task-list]');
+        const cards = [...list.querySelectorAll('[data-task-row]')];
+        const updateTasks = () => {
+            const query = search.value.trim().toLocaleLowerCase();
+            const status = statuses.find((input) => input.checked)?.value || '';
+            let visible = 0;
+            cards.forEach((card) => {
+                const matches = card.dataset.taskSearch.toLocaleLowerCase().includes(query)
+                    && (!status || card.dataset.taskStatusValue === status)
+                    && (!priority.value || card.dataset.taskPriorityValue === priority.value);
+                card.hidden = !matches;
+                if (matches) visible++;
+            });
+            const sorted = [...cards].sort((a, b) => {
+                if (sorter.value === 'priority') return Number(b.dataset.taskScore) - Number(a.dataset.taskScore);
+                const difference = Number(a.dataset.taskDue) - Number(b.dataset.taskDue);
+                return sorter.value === 'due-desc' ? -difference : difference;
+            });
+            sorted.forEach((card) => list.appendChild(card));
+            taskWorkspace.querySelector('[data-task-empty]').hidden = visible > 0;
+            taskWorkspace.querySelector('[data-task-result]').textContent = `${visible} of ${cards.length} tasks`;
+        };
+        search.addEventListener('input', updateTasks);
+        [...statuses, priority, sorter].forEach((control) => control.addEventListener('change', updateTasks));
+        taskWorkspace.querySelector('[data-task-reset]')?.addEventListener('click', () => {
+            search.value = '';
+            statuses[0].checked = true;
+            priority.value = '';
+            updateTasks();
+        });
+        updateTasks();
+    }
 
     document.querySelectorAll('[data-mood-option]').forEach((option) => option.addEventListener('change', () => option.closest('label')?.classList.add('is-selected')));
     document.querySelectorAll('[data-xp-fill]').forEach((fill) => requestAnimationFrame(() => { fill.style.width = fill.dataset.xpFill; }));
