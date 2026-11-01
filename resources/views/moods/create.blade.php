@@ -11,7 +11,13 @@
             </div>
             @error('mood')<p class="mt-4 text-sm font-semibold text-rose-600">{{ $message }}</p>@enderror
             <div class="mt-8"><label for="note" class="text-sm font-extrabold text-slate-800">A note for today <span class="font-medium text-slate-400">(optional)</span></label><textarea id="note" name="note" rows="4" class="mt-2 block w-full rounded-xl border-slate-300 bg-slate-50 text-slate-900 shadow-sm focus:border-purple-600 focus:ring-purple-600" placeholder="How are you feeling today?">{{ old('note') }}</textarea>@error('note')<p class="mt-2 text-sm font-semibold text-rose-600">{{ $message }}</p>@enderror</div>
-            <div class="mt-8 text-center"><button type="submit" class="student-button min-w-52">Save today’s mood</button><p class="mt-3 text-xs font-semibold text-slate-500">You can check in once each day.</p></div>
+            <div class="mt-8 text-center">
+                <div class="flex flex-wrap justify-center gap-3">
+                    <button type="submit" class="student-button min-w-52">Save today’s mood</button>
+                    <a href="{{ route('dashboard') }}" class="student-button-secondary">Not Now</a>
+                </div>
+                <p class="mt-3 text-xs font-semibold text-slate-500">Check-in is optional. You can save one mood each day.</p>
+            </div>
         </form>
     </div>
 @endsection

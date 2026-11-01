@@ -148,33 +148,44 @@ class GamificationService
                 ->lockForUpdate()
                 ->first();
 
-            $streakDay = GamificationStreakDay::firstOrCreate([
+            // Compare calendar dates: SQLite retains the datetime produced by Eloquent's date cast.
+            // The profile lock above serializes day creation for this user.
+            if (GamificationStreakDay::where('user_id', $user->id)
+                ->whereDate('activity_date', $date->toDateString())->lockForUpdate()->first()) {
+                return;
+            }
+
+            GamificationStreakDay::create([
                 'user_id' => $user->id,
                 'activity_date' => $date->toDateString(),
             ]);
 
-            if (! $streakDay->wasRecentlyCreated) {
-                return;
+            // Only rewarded activity days are considered, never historical tasks/moods.
+            // Recalculate runs chronologically so yesterday can bridge an existing gap.
+            $previousDay = null;
+            $run = 0;
+            $longest = 0;
+            foreach (GamificationStreakDay::where('user_id', $user->id)
+                ->orderBy('activity_date')->lockForUpdate()->get(['activity_date']) as $activityDay) {
+                // A locking read also sees task days committed while this request waited.
+                $day = $activityDay->activity_date->copy()->startOfDay();
+                $run = $previousDay && $previousDay->copy()->addDay()->isSameDay($day)
+                    ? $run + 1 : 1;
+                $longest = max($longest, $run);
+                $previousDay = $day;
             }
 
-            $previousDate = $profile->last_qualifying_activity_date;
-
-            $profile->current_streak =
-                $previousDate &&
-                $previousDate->copy()->addDay()->isSameDay($date)
-                    ? $profile->current_streak + 1
-                    : 1;
-
-            $profile->longest_streak = max(
-                $profile->longest_streak,
-                $profile->current_streak
-            );
-
-            $profile->last_qualifying_activity_date = $date;
+            // Preserve a later cached date if an older installation has incomplete day rows.
+            if (! $profile->last_qualifying_activity_date ||
+                $previousDay->gte($profile->last_qualifying_activity_date)) {
+                $profile->last_qualifying_activity_date = $previousDay;
+                $profile->current_streak = $previousDay->lt(Carbon::today()->subDay()) ? 0 : $run;
+            }
+            $profile->longest_streak = max($profile->longest_streak, $longest);
             $profile->save();
 
             if (
-                $profile->current_streak >= 7 &&
+                $longest >= 7 &&
                 $this->unlock($user, 'consistency_star')
             ) {
                 $this->award(

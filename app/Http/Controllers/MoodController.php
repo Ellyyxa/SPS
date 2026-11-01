@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Mood;
 use App\Services\GamificationService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Database\QueryException;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class MoodController extends Controller
 {
@@ -36,77 +36,64 @@ class MoodController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request, GamificationService $gamification)
-{
-    $request->validate([
-        'mood' => 'required',
-        'note' => 'nullable',
-    ]);
+    {
+        $user = $request->user();
+        abort_unless($user && $user->role === 'student', 403);
 
-    $user = $request->user();
-    $today = now()->toDateString();
+        $today = Carbon::today('Asia/Kuala_Lumpur');
+        $validated = $request->validate([
+            'date' => ['sometimes', 'required', 'date_format:Y-m-d', Rule::in([
+                $today->toDateString(), $today->copy()->subDay()->toDateString(),
+            ])],
+            'mood' => ['required', 'string', Rule::in(['Happy', 'Neutral', 'Sad', 'Stress', 'Angry'])],
+            'note' => ['nullable', 'string', 'max:2000'],
+        ], [
+            'date.in' => 'You can check in only for today or yesterday in Malaysia time.',
+            'date.date_format' => 'Please provide a check-in date in YYYY-MM-DD format.',
+            'mood.in' => 'Please choose Happy, Neutral, Sad, Stress, or Angry.',
+        ]);
+        $date = $validated['date'] ?? $today->toDateString();
 
-    // Friendly check before attempting to create today's mood.
-    $todayMood = $user->moods()
-        ->whereDate('date', $today)
-        ->first();
+        try {
+            $created = DB::transaction(function () use ($user, $validated, $date, $gamification) {
+                // Serialize submissions for this student, including different represented days.
+                $user->newQuery()->whereKey($user->id)->lockForUpdate()->firstOrFail();
 
-    if ($todayMood) {
-        return redirect()->route('dashboard')
-            ->with('error', 'You have already updated your mood today.');
-    }
+                if ($user->moods()->whereDate('date', $date)->exists()) {
+                    return false;
+                }
 
-    try {
-        DB::transaction(function () use (
-            $request,
-            $user,
-            $today,
-            $gamification
-        ) {
-            $mood = $user->moods()->create([
-                'mood' => $request->mood,
-                'note' => $request->note,
-                'date' => $today,
-            ]);
+                $mood = $user->moods()->create([
+                    'mood' => $validated['mood'],
+                    'note' => $validated['note'] ?? null,
+                    'date' => $date,
+                ]);
 
-            // Daily Emotion Check-In: +5 XP once.
-            $awarded = $gamification->award(
-                $user,
-                5,
-                'Daily Emotion Check-In',
-                'mood_checkin',
-                $mood->id,
-                'mood_checkin:' . $mood->id
-            );
-
-            // A legitimate reward qualifies today as a streak day.
-            if ($awarded) {
-                $gamification->qualifyDay(
-                    $user,
-                    Carbon::today()
+                // Date-based identity survives replacement of the mood record.
+                $awarded = $gamification->award(
+                    $user, 5, 'Daily Emotion Check-In', 'mood_checkin', $mood->id,
+                    'mood_checkin_date:'.$user->id.':'.$date
                 );
+
+                if ($awarded) {
+                    $gamification->qualifyDay($user, Carbon::parse($date, 'Asia/Kuala_Lumpur'));
+                }
+
+                return true;
+            }, 3);
+        } catch (UniqueConstraintViolationException $exception) {
+            // Only translate a real same-user/date collision; expose unrelated failures.
+            if (! $user->moods()->whereDate('date', $date)->exists()) {
+                throw $exception;
             }
-        });
-    } catch (QueryException $exception) {
-
-        // MySQL duplicate-entry error.
-        if (
-            ($exception->errorInfo[1] ?? null) === 1062 ||
-            ($exception->errorInfo[0] ?? null) === '23000'
-        ) {
-            return redirect()->route('dashboard')
-                ->with(
-                    'error',
-                    'You have already updated your mood today.'
-                );
+            $created = false;
         }
 
-        // Do not hide unrelated database errors.
-        throw $exception;
+        return redirect()->route('dashboard')->with(
+            $created ? 'success' : 'error',
+            $created ? 'Mood saved successfully.' : 'You have already recorded a mood for '.$date.'.'
+        );
     }
-
-    return redirect()->route('dashboard')
-        ->with('success', 'Mood saved successfully.');
-}
 
     /**
      * Display the specified resource.

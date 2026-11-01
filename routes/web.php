@@ -15,7 +15,7 @@ use App\Http\Controllers\AdminEmotionController;
 use App\Http\Controllers\AdminNotificationController;
 use App\Http\Controllers\AdminProfileController;
 
-Route::middleware(['auth', 'verified', 'student.mood.checked'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::resource('tasks', TaskController::class);
 
@@ -30,26 +30,26 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth', 'verified', 'student.mood.checked'])
+    ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-Route::middleware(['auth', 'verified', 'student.mood.checked'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar');
     Route::get('/my-penguin', [PenguinController::class, 'index'])
     ->name('penguin');
 });
 
-Route::middleware(['auth', 'verified', 'student.mood.checked'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'role:student'])->group(function () {
     Route::get('/moods/create', [MoodController::class, 'create'])->name('moods.create');
     Route::post('/moods', [MoodController::class, 'store'])->name('moods.store');
 });
 
-Route::middleware(['auth', 'verified', 'student.mood.checked'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('moods', MoodController::class)->except(['create', 'store']);
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
 });
