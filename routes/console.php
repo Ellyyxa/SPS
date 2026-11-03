@@ -9,3 +9,6 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('sps:send-task-due-reminders')->dailyAt('08:00')->withoutOverlapping();
+
+Schedule::command('sps:send-evening-emotion-reminders')
+    ->timezone('Asia/Kuala_Lumpur')->dailyAt('20:30')->withoutOverlapping();

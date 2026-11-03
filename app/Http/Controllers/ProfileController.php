@@ -55,6 +55,19 @@ class ProfileController extends Controller
         ->with('status', 'profile-updated');
 }
 
+    public function updateEmotionReminder(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+        abort_unless($user && $user->role === 'student', 403);
+        $validated = $request->validate([
+            'evening_emotion_reminder' => ['required', 'boolean'],
+        ]);
+        $user->evening_emotion_reminder = (bool) $validated['evening_emotion_reminder'];
+        $user->save();
+
+        return Redirect::route('profile.edit')->with('status', 'emotion-reminder-updated');
+    }
+
     /**
      * Delete the user's account.
      */

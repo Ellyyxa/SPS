@@ -81,6 +81,13 @@
         </div>
 
 
+        {{-- Optional reminders --}}
+        @if ($user->role === 'student')
+            <div class="student-card p-6 sm:p-8">
+                @include('profile.partials.update-emotion-reminder-form')
+            </div>
+        @endif
+
         {{-- Password --}}
         <div class="student-card p-6 sm:p-8">
             @include('profile.partials.update-password-form')

@@ -26,11 +26,14 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
+    protected $attributes = ['evening_emotion_reminder' => false];
+
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'evening_emotion_reminder' => 'boolean',
         ];
     }
 

@@ -45,6 +45,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 Route::middleware(['auth', 'verified', 'role:student'])->group(function () {
+    Route::patch('/profile/emotion-reminder', [ProfileController::class, 'updateEmotionReminder'])
+        ->name('profile.emotion-reminder.update');
     Route::get('/moods/create', [MoodController::class, 'create'])->name('moods.create');
     Route::post('/moods', [MoodController::class, 'store'])->name('moods.store');
 });

@@ -1,3 +1,5 @@
+import { initMoodHistory } from './mood-history';
+
 const ready = (callback) => document.readyState === 'loading'
     ? document.addEventListener('DOMContentLoaded', callback)
     : callback();
@@ -61,6 +63,28 @@ ready(() => {
     }
 
     document.querySelectorAll('[data-mood-option]').forEach((option) => option.addEventListener('change', () => option.closest('label')?.classList.add('is-selected')));
+    const checkInForm = document.querySelector('[data-checkin-form]');
+    if (checkInForm) {
+        const dateSelect = checkInForm.querySelector('[data-checkin-date]');
+        const save = checkInForm.querySelector('[data-checkin-save]');
+        const status = checkInForm.querySelector('[data-checkin-status]');
+        const updateDateStatus = () => {
+            const option = dateSelect.selectedOptions[0];
+            const recorded = option?.dataset.recorded === 'true';
+            const unavailable = !option || option.dataset.unavailable === 'true';
+            save.disabled = recorded || unavailable;
+            status.textContent = recorded
+                ? 'Already checked in for this date. Choose another available day.'
+                : unavailable ? 'This date is no longer eligible. Please choose Today or Yesterday.'
+                    : 'This date is available for check-in.';
+        };
+        dateSelect.addEventListener('change', updateDateStatus);
+        checkInForm.addEventListener('submit', (event) => {
+            updateDateStatus();
+            if (save.disabled) event.preventDefault();
+        });
+        updateDateStatus();
+    }
     document.querySelectorAll('[data-xp-fill]').forEach((fill) => requestAnimationFrame(() => { fill.style.width = fill.dataset.xpFill; }));
     document.querySelectorAll('[data-password-toggle]').forEach((button) => button.addEventListener('click', () => { const input = document.querySelector(button.dataset.passwordToggle); if (!input) return; const visible = input.type === 'text'; input.type = visible ? 'password' : 'text'; button.textContent = visible ? 'Show' : 'Hide'; button.setAttribute('aria-label', visible ? 'Show password' : 'Hide password'); }));
 
@@ -321,24 +345,7 @@ if (calendar && taskData) {
     render();
 }   
 
-    const moodCanvas=document.querySelector('[data-mood-chart]'), moodData=document.querySelector('#mood-history');
-    if(moodCanvas&&moodData){
-        const rawData=JSON.parse(moodData.textContent);
-        const normalizeMood=(value)=>{const mood=String(value||'').trim().toLowerCase(); if(mood.includes('happy')||mood.includes('joy')) return {score:5,label:'Happy'}; if(mood.includes('neutral')||mood.includes('calm')||mood.includes('okay')) return {score:4,label:'Neutral'}; if(mood.includes('sad')||mood.includes('down')) return {score:3,label:'Sad'}; if(mood.includes('stress')||mood.includes('anx')||mood.includes('worry')) return {score:2,label:'Stress'}; if(mood.includes('angry')||mood.includes('mad')||mood.includes('frustrat')) return {score:1,label:'Angry'}; return {score:3,label:value||'Mood'};};
-        const data = rawData
-        .slice(0, 7)
-        .map(entry => ({
-            ...entry,
-            ...normalizeMood(entry.mood)
-        }))
-        .reverse();
-
-const ctx = moodCanvas.getContext('2d');
-        const draw=()=>{const cw=Math.max(moodCanvas.clientWidth,280),ch=Math.max(moodCanvas.clientHeight,240),ratio=window.devicePixelRatio||1,left=52,right=18,top=18,bottom=42; moodCanvas.width=cw*ratio;moodCanvas.height=ch*ratio;ctx.setTransform(ratio,0,0,ratio,0,0);ctx.clearRect(0,0,cw,ch);ctx.font='11px Figtree, sans-serif'; if(!data.length){ctx.fillStyle='#64748b';ctx.textAlign='center';ctx.fillText('No mood records yet',cw/2,ch/2);return;} const labels=['Angry','Stress','Sad','Neutral','Happy'], plotHeight=ch-top-bottom,plotWidth=cw-left-right,yFor=(score)=>ch-bottom-(score-1)*plotHeight/4; ctx.strokeStyle='#dbe3f0';ctx.lineWidth=1;ctx.fillStyle='#64748b';ctx.textAlign='right'; labels.forEach((label,index)=>{const y=yFor(index+1);ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(cw-right,y);ctx.stroke();ctx.fillText(label,left-8,y+4);}); const xFor=(index)=>data.length===1?left+plotWidth/2:left+index*plotWidth/(data.length-1); ctx.strokeStyle='#633ba0';ctx.lineWidth=3;ctx.beginPath();data.forEach((entry,index)=>{const x=xFor(index),y=yFor(entry.score); index?ctx.lineTo(x,y):ctx.moveTo(x,y);});ctx.stroke();data.forEach((entry,index)=>{const x=xFor(index),y=yFor(entry.score);ctx.fillStyle='#633ba0';ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);ctx.fill();ctx.fillStyle='#475569';ctx.textAlign='center';const date=new Date(`${entry.date}T00:00:00`);ctx.fillText(Number.isNaN(date.getTime())?entry.date:date.toLocaleDateString('en-GB', {
-    day: 'numeric',
-    month: 'short'
-})  ,x,ch-16);});}; new ResizeObserver(draw).observe(moodCanvas); draw();
-    }
+    initMoodHistory();
 
     document.querySelectorAll('[data-photo-input]').forEach((input) => input.addEventListener('change', () => { const file=input.files?.[0], preview=document.querySelector(input.dataset.photoPreview); if(file&&preview){preview.src=URL.createObjectURL(file);preview.classList.remove('hidden');} }));
 });
