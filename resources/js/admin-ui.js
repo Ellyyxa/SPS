@@ -1,8 +1,11 @@
+import { initAdminEmotionTrends } from './admin-emotion-trends';
+
 const whenReady = (callback) => document.readyState === 'loading'
     ? document.addEventListener('DOMContentLoaded', callback)
     : callback();
 
 whenReady(() => {
+    initAdminEmotionTrends();
     document.querySelectorAll('[data-admin-filter]').forEach((form) => {
         const input = form.querySelector('[data-filter-search]');
         input?.addEventListener('input', () => {
